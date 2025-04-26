@@ -1,0 +1,22 @@
+{
+  "mobile": [
+    { "title": "Title", "value": "Title", "width": "50%", "align": "start" ,"sortable":true},
+    { "title": "Price", "value": "Price", "width": "30%", "align": "end", "sortable": false },
+    { "title": "Actions", "value": "actions", "width": "20%", "align": "center", "sortable": false }
+  ],
+  "tablet": [
+    { "title": "Title", "value": "Title", "width": "40%", "align": "start" ,"sortable":true},
+    { "title": "Price", "value": "Price", "width": "25%", "align": "end", "sortable": false },
+    { "title": "Category", "value": "Category", "width": "25%", "align": "start", "sortable": false },
+    { "title": "Actions", "value": "actions", "width": "10%", "align": "center", "sortable": false }
+  ],
+  "desktop": [
+    { "title": "Title", "value": "Title", "width": "20%", "align": "start" , "sortable":true},
+    { "title": "Description", "value": "Description", "width": "20%", "align": "end", "sortable": false },
+    { "title": "Price", "value": "Price", "width": "15%", "align": "center", "sortable": false },
+    { "title": "Category", "value": "Category", "width": "15%", "align": "center", "sortable": false },
+    { "title": "Image", "value": "Image", "width": "15%", "align": "center", "sortable": false },
+    { "title": "C_OR_R", "value": "C_OR_R", "width": "10%", "align": "center", "sortable": false },
+    { "title": "Actions", "value": "actions", "width": "5%", "align": "center", "sortable": false }
+  ]
+}
