@@ -197,7 +197,7 @@ const handlerCancelEdit = (food) => {
     (foodItem) => foodItem?.Id === food.Id
   );
   if (targetExapndedIndex > -1) {
-    clonedExpanedFoodList.value.splice(targetExapndedIndex, 1);
+    clonedExpanedFoodList.value[targetExapndedIndex] = {};
   }
 };
 
