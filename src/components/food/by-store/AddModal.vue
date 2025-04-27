@@ -44,6 +44,7 @@
             variant="outlined"
             :maxlength="50"
           />
+
           <v-select
             :items="categories"
             v-model="newFood.Category"
@@ -83,7 +84,8 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import { addFood } from "@/api/foods/index.js";
+import { useFoodStore } from "@/store/foods.js";
+const foodStore = useFoodStore();
 
 defineProps({
   isOpenModal: {
@@ -109,7 +111,8 @@ const submitNewFood = () => {
   newFood.value["C_OR_R"] = "T";
   newFood.value["image"] = "";
   isLoading.value = true;
-  addFood(newFood.value)
+  foodStore
+    .addFood(newFood.value)
     .then(() => {
       emits("onAddFood", newFood.value);
       newFood.value = {

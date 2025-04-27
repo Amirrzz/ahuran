@@ -115,7 +115,7 @@
                 :disabled="item.isLoading"
               />
               <v-select
-                :items="computedCategoryFoodList"
+                :items="foodStore.getCategories || []"
                 v-model="clonedExpanedFoodList[index].Category"
                 density="comfortable"
                 label="Comfortable"
@@ -132,22 +132,23 @@
     :isOpenModal="isOpenAddModal"
     @onClose="isOpenAddModal = false"
     @onAddFood="handlerNewFood"
-    :categories="computedCategoryFoodList"
+    :categories="foodStore.getCategories || []"
   />
 </template>
 
 <script setup>
 import { ref, computed, onBeforeMount } from "vue";
-import { getFoodList, updateFood, deleteFood } from "@/api/foods/index.js";
 import TableHeaders from "@/utilities/table-headers/foods.json";
+import { useFoodStore } from "@/store/foods.js";
 import { useDisplay } from "vuetify";
+import AddModal from "@/components/food/by-store/AddModal.vue";
 const { smAndDown, md: mediumScreenSize } = useDisplay();
-import AddModal from "@/components/food/AddModal.vue";
 /// get and filtre food list parts
-const foodList = ref([]);
+
+const foodStore = useFoodStore();
 const search = ref("");
 const computedFoodList = computed(() => {
-  const list = foodList.value || [];
+  const list = foodStore.list || [];
   return list.map((food) => {
     return {
       ...food,
@@ -155,23 +156,12 @@ const computedFoodList = computed(() => {
     };
   });
 });
-const computedCategoryFoodList = computed(() => {
-  const categories = computedFoodList.value
-    .map((food) => food.Category?.trim())
-    .filter((food) => food);
-  return [...new Set(categories)];
-});
-
 const isLoadingGettingList = ref(false);
 const getNewFoodList = async () => {
   isLoadingGettingList.value = true;
-  getFoodList()
-    .then((result) => {
-      foodList.value = result || [];
-    })
-    .finally(() => {
-      isLoadingGettingList.value = false;
-    });
+  foodStore.getFoodList().finally(() => {
+    isLoadingGettingList.value = false;
+  });
 };
 const computedTableHeaders = computed(() => {
   if (smAndDown.value) return TableHeaders.mobile;
@@ -187,9 +177,6 @@ const getFoodIndexById = (foodId) => {
 
 /// add parts
 const isOpenAddModal = ref(false);
-const handlerNewFood = (newFood) => {
-  clonedExpanedFoodList.value = [];
-};
 /// edit parts
 const computedExpandedList = computed(() => {
   return clonedExpanedFoodList.value.map((food) => food.Id);
@@ -217,35 +204,21 @@ const handlerApplyEdit = (item) => {
   if (targetClonedFoodIndex === -1) return;
   const targetClonedFood = clonedExpanedFoodList.value[targetClonedFoodIndex];
   const targetFoodIndex = getFoodIndexById(targetClonedFood.Id);
-  foodList.value[targetFoodIndex].isLoading = true;
   targetClonedFood["C_OR_R"] = "T";
   targetClonedFood["Category"] = "test";
   targetClonedFood["Price"] = +(
     targetClonedFood?.Price?.replaceAll(",", "") || 0
   );
-  updateFood(targetClonedFood)
-    .then((result) => {
-      updateExistFoodLocally(targetClonedFood, targetFoodIndex);
-      handlerCancelEdit(targetClonedFood);
-    })
-    .finally(() => {
-      foodList.value[targetFoodIndex].isLoading = false;
-    });
+  foodStore.updateFood(targetClonedFood, targetFoodIndex).then(() => {
+    handlerCancelEdit(targetClonedFood);
+  });
 };
-const updateExistFoodLocally = (updatedFood, index) => {
-  foodList.value[index] = updatedFood;
+const handlerNewFood = () => {
+  clonedExpanedFoodList.value = [];
 };
-
 /// delete part
 const handlerDelete = (food, index) => {
-  foodList.value[index].isLoading = true;
-  deleteFood(food)
-    .then(() => {
-      foodList.value.splice(index, 1);
-    })
-    .finally(() => {
-      foodList.value[index].isLoading = false;
-    });
+  foodStore.deleteFood(food, index);
 };
 onBeforeMount(() => {
   getNewFoodList();
